@@ -1,120 +1,73 @@
 
-/* Problem Link (Course Schedule) : https://cses.fi/problemset/result/1074592/ */
+/* Problem Link (Course Schedule) : https://cses.fi/problemset/task/1679/ */
 
 #include<bits/stdc++.h>
-#include<cstring>
-//#define Mfc_Tanzim
-#define   ll         long long
-#define   ull        unsigned long long
-#define   pb         push_back
-#define   ff         first
-#define   ss         second
-#define   all(v)     (v.begin(), v.end())
-#define   rall(v)    (v.rbegin(), v.rend())
-#define   pi         acos(-1.0)
-#define   FastRead   ios_base::sync_with_stdio(0);cin.tie(0); cout.tie(0);
-#define   bug(a)     cerr << #a << " : " << a << endl
 using namespace std;
-const ll mod = 1e9+7;
-const ll mx = 2e5+10;
 
-ll posx[] = {1,-1, 0, 0};
-ll posy[] = {0, 0, 1,-1};
-vector<int>graph[mx], ret;
-bool cycle_found = false, vis[mx], visit[mx];
-int last_node = -1, in_deg[mx];
+int n;
+vector<int> graph[1000000];
+int visited[1000000];///this one is used for detecting Cycle
+bool vis[1000000];
+
 stack<int>s;
 
-void topological_sort(int src)
+bool cycleFound(int src)
 {
-    visit[src] = true;
-    for(auto x: graph[src]){
-              if(!visit[x]){
-                       topological_sort(x);
-              }
-    }
-    s.push(src);
+    if(visited[src]==1)
+        return true;
+    if(visited[src]==2)
+        return false;
+
+    visited[src]=1;
+    for(auto v: graph[src])
+        if(cycleFound(v))
+            return true;
+
+    visited[src]=2;
+    return false;
+}
+bool detectCycle()
+{
+    for(int u=1; u<=n; u++)
+        if(!visited[u])
+            if(cycleFound(u))
+                return true;
+    return false;
 }
 
-void Dfs(int src)
+void Dfs(int u)
 {
-    vis[src] = true;
-    for(auto x: graph[src]){
-              if(!vis[x]){
-                       Dfs(x);
-              }
-              else{
-                       last_node = x;
-                       return;
-              }
-              if(cycle_found){
-                       return;
-              }
-              if(~last_node){
-                       if(src==last_node){
-                                 cycle_found = true;
-                       }
-                       return;
-              }
-    }
+    vis[u]=true;
+    for(auto v: graph[u])
+        if(!vis[v])
+            Dfs(v);
+    s.push(u);
 }
 
-int main()
+int main ()
 {
-     FastRead
-
-#ifdef Mfc_Tanzim
-    freopen("input.txt","r", stdin);
-    // freopen("output.txt","w", stdout);
-#endif /// Mfc_Tanzim
-
-    int n, e;
-    cin >> n >> e;
-    while(e--){
-             int a, b;
-             cin >> a >> b;
-             graph[a].pb(b);
-             in_deg[b]++;
-    }
-    for(int i=1; i<=n; i++){
-             if(!visit[i]){
-                      topological_sort(i);
-             }
-    }
-    while(!s.empty()&&!cycle_found){
-             int x = s.top();
-             s.pop();
-             if(!vis[x]){
-                      Dfs(x);
-             }
-    }
-    if(cycle_found){
-             cout << "IMPOSSIBLE" << '\n';
-    }
-    else{
-            queue<int>q;
-            for(int i=1; i<=n; i++){
-                      if(!in_deg[i]){
-                               q.push(i);
-                      }
-            }
-            vector<int>ret;
-            while(!q.empty()){
-                      int x = q.front();
-                      q.pop();
-                      ret.pb(x);
-                      for(auto xx: graph[x]){
-                                 in_deg[xx]--;
-                                 if(!in_deg[xx]){
-                                            q.push(xx);
-                                 }
-                      }
-            }
-            for(auto x: ret){
-                      cout << x << " ";
-            }
-            cout << "\n";
+    //freopen("input.txt", "r", stdin);
+    int m, u, v;
+    cin >> n >> m;
+    while(m--)
+    {
+        cin >> u >> v;
+        graph[u].push_back(v);
     }
 
-    return 0;
+    for(int i=1; i<=n; i++)
+        if(!vis[i])
+            Dfs(i);
+
+    if(detectCycle())
+        cout << "IMPOSSIBLE" << endl;
+    else
+    {
+        while(!s.empty())
+        {
+            cout << s.top() << " ";
+            s.pop();
+        }
+        cout << endl;
+    }
 }
