@@ -3,8 +3,6 @@
 
 
 
-
-
 //================ gp hash table ======================
 #include <ext/pb_ds/assoc_container.hpp>
 using namespace __gnu_pbds;
@@ -19,5 +17,5 @@ struct chash {
     static unsigned hash_combine(unsigned a, unsigned b) { return a * 31 + b; }
     long long operator()(long long x) const { return hash_f(x)^RANDOM; }
 };
-gp_hash_table<long long, long long, chash> ans, frq, last;
+gp_hash_table<long long, long long, chash> table;
 //=====================================================
