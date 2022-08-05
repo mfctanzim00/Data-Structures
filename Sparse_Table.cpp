@@ -25,26 +25,20 @@ int table[mx][500]; ///log of mx
 
 void buildSparseTable(int arr[], int n)
 {
-	for (int i=0; i<n; i++)
-		table[i][0] = arr[i];
+    for(int i=0; i<n; i++)
+        table[i][0] = arr[i];
 
-	for (int j=1; (1<<j)<= n; j++) {
-		for (int i=0; (i+(1<<j)-1)<n; i++) {
-			if (table[i][j-1] < table[i+(1<<(j-1))][j-1])
-				table[i][j] = table[i][j-1];
-			else
-				table[i][j] = table[i+(1<<(j-1))][j-1];
-		}
-	}
+    for(int j=1; (1<<j)<=n; j++)
+        for(int i=0; (i+(1<<j)-1)<n; i++)
+            table[i][j] = max(table[i][j-1], table[i+(1<<(j-1))][j-1]);
 }
 
 int query(int l, int r)
 {
-	int j = log2(r-l+1);
-	if (table[l][j] <= table[r-(1<<j)+1][j])
-		return table[l][j];
-	else
-		return table[r-(1<<j)+1][j];
+    if(l>r)swap(l, r);
+
+    int j = log2(r-l+1);
+    return max(table[l][j], table[r-(1<<j)+1][j]);
 }
 
 int main()
